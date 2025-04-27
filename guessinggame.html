@@ -1,0 +1,142 @@
+<!--implementing guessing game-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Guessing Game</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9f9f9;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .game-container {
+      max-width: 400px;
+      margin: auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    input[type="number"] {
+      padding: 10px;
+      width: 80px;
+      font-size: 1.2rem;
+      margin-right: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    .message {
+      margin-top: 20px;
+      font-size: 1.1rem;
+    }
+
+    .disabled {
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .guesses {
+      margin-top: 10px;
+      font-size: 0.95rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="game-container">
+    <h1>🎯 Guessing Game</h1>
+    <p>Guess a number between 1 and 20</p>
+    <input type="number" id="guessInput" min="1" max="20">
+    <button onclick="makeGuess()">Guess</button>
+    <div class="message" id="message"></div>
+    <div class="guesses" id="guessesList"></div>
+    <button onclick="restartGame()" style="margin-top:15px; display: none;" id="restartBtn">Play Again</button>
+  </div>
+
+  <script>
+    let secretNumber;
+    let maxTries = 5;
+    let triesLeft;
+    let previousGuesses = [];
+
+    function initGame() {
+      secretNumber = Math.floor(Math.random() * 20) + 1;
+      triesLeft = maxTries;
+      previousGuesses = [];
+      document.getElementById("message").textContent = "";
+      document.getElementById("guessesList").textContent = "";
+      document.getElementById("restartBtn").style.display = "none";
+      document.getElementById("guessInput").value = "";
+      document.getElementById("guessInput").disabled = false;
+      document.querySelector("button").disabled = false;
+    }
+
+    function makeGuess() {
+      const input = document.getElementById("guessInput");
+      const guess = parseInt(input.value);
+
+      if (!guess || guess < 1 || guess > 20) {
+        document.getElementById("message").textContent = "⛔ Please enter a number between 1 and 20.";
+        return;
+      }
+
+      if (previousGuesses.includes(guess)) {
+        document.getElementById("message").textContent = "⚠️ You already guessed that number!";
+        return;
+      }
+
+      previousGuesses.push(guess);
+      triesLeft--;
+
+      if (guess === secretNumber) {
+        document.getElementById("message").textContent = `🎉 Correct! The number was ${secretNumber}.`;
+        endGame();
+      } else {
+        if (triesLeft > 0) {
+          let hint = guess < secretNumber ? "Too low!" : "Too high!";
+          document.getElementById("message").textContent = `❌ ${hint} You have ${triesLeft} tries left.`;
+        } else {
+          document.getElementById("message").textContent = `💀 Game over! The number was ${secretNumber}.`;
+          endGame();
+        }
+      }
+
+      document.getElementById("guessesList").textContent = `Your guesses: ${previousGuesses.join(", ")}`;
+      input.value = "";
+    }
+
+    function endGame() {
+      document.getElementById("guessInput").disabled = true;
+      document.querySelector("button").disabled = true;
+      document.getElementById("restartBtn").style.display = "inline-block";
+    }
+
+    function restartGame() {
+      initGame();
+    }
+
+    // Initialize the game on page load
+    window.onload = initGame;
+  </script>
+
+</body>
+</html>
